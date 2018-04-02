@@ -37,7 +37,7 @@ public class StudentPlayer extends TablutPlayer {
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         MCSTree tree = new MCSTree(boardState.getTurnPlayer(), boardState);
         int iterationCount = 0;
-        //while(System.currentTimeMillis()-startTime < 1750) {
+        //while(System.currentTimeMillis()-startTime < 1750) { //TODO activate
         while(System.currentTimeMillis()-startTime < 1750000) {
 
         	//System.out.println(">>ITERATION");
@@ -45,8 +45,15 @@ public class StudentPlayer extends TablutPlayer {
         	Node bestNode = tree.select();
         	//2. Expend
         	tree.expand(bestNode);
-        	//3. Simulate and (4.) update
-        	tree.simulateLight(bestNode.children);
+        	
+        	if(bestNode.children.size()<=0) {
+        		//game is over
+        		MCSTree.update(bestNode,bestNode.state.getWinner());
+        		continue; //We dont need the simulation in this case
+        	}
+        	//3. Simulate and (4.) update [part of simualtion method]
+        	//tree.simulateLight(bestNode.children);	//Simulate using lightplay
+        	tree.simulateHeavy(bestNode.children);	//Simulate using heavyplay
         	iterationCount++;
         }
         System.out.println(iterationCount+" iterations");

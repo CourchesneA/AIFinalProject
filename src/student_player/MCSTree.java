@@ -73,10 +73,21 @@ public class MCSTree {
 	}
 
 	public void simulateHeavy(List<Node> nodes) { //Simulation using improved greedy
-		//TODO
+		//Get a random node from the children nodes
+		Node node = nodes.get((new Random()).nextInt(nodes.size()));
+		TablutBoardState simState = (TablutBoardState) node.state.clone();
+		while(!simState.gameOver()) {
+			simState.processMove((TablutMove) MyTools.chooseGreedyMoveFast(simState));
+			//simState.processMove((TablutMove) MyTools.chooseGreedyMove(simState));
+			//simState.processMove((TablutMove) MyTools.chooseGreedyMoveSlow(simState));
+		}
+		int winner = simState.getWinner();
+
+		//Update / Backpropagate
+		update(node, winner);
 	}
 
-	public void update(Node node, int winner) {
+	public static void update(Node node, int winner) {
 		if(node == null) return;
 		node.simulationCount++;							//Update the simulation count
 		if(node.getTurn()==winner)node.winCount++;		//If this player won, update its wincount
@@ -95,7 +106,7 @@ public class MCSTree {
 		}
 	}
 	
-	static class NodeScoreComparator implements Comparator<Node>{
+	static class NodeScoreComparator implements Comparator<Node>{ //TODO we actually want the wincout/simcount
 		public int compare(Node a, Node b) {
 			if( a.winCount > b.winCount)
 				return -1;
@@ -111,7 +122,7 @@ public class MCSTree {
 		Node parent;
 		ArrayList<Node> children;
 		Move move; //Move from the parent, i.e. was applied to node.parent and resulted in this.state
-		private TablutBoardState state;
+		public TablutBoardState state;
 
 		public Node(Node parent, TablutBoardState state) {
 			this.parent = parent;
@@ -129,5 +140,6 @@ public class MCSTree {
 		public int getTurn() {
 			return state.getTurnPlayer();
 		}
+		
 	}
 }
