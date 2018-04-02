@@ -1,5 +1,7 @@
 package student_player;
 
+import java.util.Collections;
+
 import boardgame.Move;
 import student_player.MCSTree.Node;
 import tablut.TablutBoardState;
@@ -31,24 +33,26 @@ public class StudentPlayer extends TablutPlayer {
 
         // Is random the best you can do?
         Move myMove = boardState.getRandomMove();
-        System.out.println(">>board state turn: "+boardState.getTurnPlayer());
         
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         MCSTree tree = new MCSTree(boardState.getTurnPlayer(), boardState);
-        
-        //TODO what is the lookahead dafuq
-        while(System.currentTimeMillis()-startTime < 1750) {
-        	System.out.println(">>ITERATION");
+        int iterationCount = 0;
+        //while(System.currentTimeMillis()-startTime < 1750) {
+        while(System.currentTimeMillis()-startTime < 1750000) {
+
+        	//System.out.println(">>ITERATION");
         	//1. Select
         	Node bestNode = tree.select();
-        	myMove = bestNode.move;
         	//2. Expend
         	tree.expand(bestNode);
         	//3. Simulate and (4.) update
         	tree.simulateLight(bestNode.children);
+        	iterationCount++;
         }
+        System.out.println(iterationCount+" iterations");
+        //Get the best move from the tree
+        myMove = Collections.max(tree.root.children,new MCSTree.NodeScoreComparator()).move;
         
-        System.out.println(">>Given move turn: "+myMove.getPlayerID());
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // Return your move to be processed by the server.
