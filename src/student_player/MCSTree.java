@@ -52,6 +52,19 @@ public class MCSTree {
 			node.children.add(newNode);
 		}
 	}
+	
+	/**
+	 * Expand a node in the tree with only a random move
+	 * @param node
+	 */
+	public void lightExpand(Node node) {
+		Move m = node.state.getRandomMove();
+		TablutBoardState newState = (TablutBoardState) node.state.clone();
+		newState.processMove((TablutMove)m);
+		Node newNode = new Node(node, newState);
+		newNode.move = m;
+		node.children.add(newNode);
+	}
 
 	/**
 	 * Select a random node from the list, simulate randomly until the end and update the tree's statistics
@@ -87,6 +100,11 @@ public class MCSTree {
 		update(node, winner);
 	}
 
+	/**
+	 * Recursive function to update the search tree
+	 * @param node
+	 * @param winner
+	 */
 	public static void update(Node node, int winner) {
 		if(node == null) return;
 		node.simulationCount++;							//Update the simulation count
@@ -100,9 +118,11 @@ public class MCSTree {
 
 	private static class NodeComparator implements Comparator<Node> {
 		public int compare(Node a, Node b) {
-			if (a.UCTvalue() > b.UCTvalue())
-				return -1; // highest value first
-			return 1;
+			double t1 = a.UCTvalue();
+			double t2 = b.UCTvalue();
+			if (t1 > t2)
+				return 1; // highest value first
+			return -1;
 		}
 	}
 	
@@ -132,8 +152,9 @@ public class MCSTree {
 
 		public double UCTvalue() {
 			assert(parent != null);
-			double simCount = simulationCount == 0 ? 0.000000001 : simulationCount;	//Catch division by zero
-			double val = ((double)winCount / simCount) + Math.sqrt(2)*Math.sqrt(Math.log(parent.simulationCount)/simCount);
+			if(simulationCount == 0)return Double.MAX_VALUE; //If we have not visited this node before, do it now
+			//double simCount = simulationCount == 0 ? 0.000000001 : simulationCount;	//Catch division by zero
+			double val = ((double)winCount / simulationCount) + Math.sqrt(2)*Math.sqrt(Math.log(parent.simulationCount)/simulationCount);
 			return val;
 		}
 

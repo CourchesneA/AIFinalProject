@@ -1,7 +1,9 @@
 /tablut/
 /boardgame/
-/bohnenspiel/
+
 /coordinates/
 /student_player/
 /autoplay/
 /mytools/
+*.class
+*.log

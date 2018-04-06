@@ -44,7 +44,8 @@ public class StudentPlayer extends TablutPlayer {
         	//1. Select
         	Node bestNode = tree.select();
         	//2. Expend
-        	tree.expand(bestNode);
+        	tree.expand(bestNode);	//TODO choose best
+        	//tree.lightExpand(bestNode);
         	
         	if(bestNode.children.size()<=0) {
         		//game is over
@@ -65,4 +66,6 @@ public class StudentPlayer extends TablutPlayer {
         // Return your move to be processed by the server.
         return myMove;
     }
+    
+    
 }
